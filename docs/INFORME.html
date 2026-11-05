@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Informe Tarea 2.2 - Bitacora API</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; color: #222; }
+    h1, h2 { color: #1f3864; }
+    table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+    th, td { border: 1px solid #999; padding: 8px; }
+    th { background: #d9e2f3; }
+    img { max-width: 100%; border: 1px solid #ccc; }
+    .diagram { background: #f2f2f2; padding: 12px; font-family: monospace; white-space: pre; }
+  </style>
+</head>
+<body>
+  <h1>Informe - Tarea 2.2 API REST Bitacora</h1>
+
+  <h2>Diagrama de capas y dependencias</h2>
+  <div class="diagram">
+Bitacora.Api  --> Bitacora.Application
+Bitacora.Api  --> Bitacora.Infrastructure
+Bitacora.Infrastructure --> Bitacora.Application
+Bitacora.Infrastructure --> Bitacora.Domain
+Bitacora.Application --> Bitacora.Domain
+Bitacora.Domain --> (ninguna dependencia)
+  </div>
+  <p>Regla: todas las capas dependen hacia el dominio. El dominio no conoce a ningún otro proyecto.</p>
+
+  <h2>Captura de Swagger</h2>
+  <img src="images/swagger.png" alt="Swagger UI">
+
+  <h2>Pruebas en Postman</h2>
+  <p>Coleccion: <code>docs/Bitacora.postman_collection.json</code><br>
+  Entorno: <code>docs/Bitacora.postman_environment.json</code> (variable <code>baseUrl</code>).</p>
+  <ul>
+    <li>GET /api/registros exitoso (200), sin foto.</li>
+    <li>GET /api/registros/{id} exitoso (200) y fallido (404).</li>
+    <li>POST /api/registros exitoso (201 con Location) y fallido (400).</li>
+    <li>PUT /api/registros/{id} exitoso (200), fallido (400) y fallido (404).</li>
+    <li>DELETE /api/registros/{id} exitoso (204) y fallido (404).</li>
+  </ul>
+
+  <h2>Distribucion del trabajo</h2>
+  <table>
+    <tr><th>Integrante</th><th>Responsabilidad</th></tr>
+    <tr><td>Integrante 1</td><td>Estructura de la solucion, proyectos y referencias.</td></tr>
+    <tr><td>Integrante 2</td><td>Entidad de dominio y DTOs con validaciones.</td></tr>
+    <tr><td>Integrante 3</td><td>Repositorio EF Core, DbContext y migraciones.</td></tr>
+    <tr><td>Integrante 4</td><td>Controladores, middleware de errores y configuracion Swagger.</td></tr>
+    <tr><td>Integrante 5</td><td>Coleccion de Postman, README y documentacion.</td></tr>
+  </table>
+  <p>Ajustar los nombres reales de los integrantes antes de la entrega.</p>
+</body>
+</html>
