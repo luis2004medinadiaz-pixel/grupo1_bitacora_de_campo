@@ -54,6 +54,12 @@ public class MainActivity extends AppCompatActivity {
         vm.load();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        vm.load();
+    }
+
     private void render(UiState<java.util.List<RegistroDto>> s) {
         progress.setVisibility(View.GONE);
         txtEmpty.setVisibility(View.GONE);
