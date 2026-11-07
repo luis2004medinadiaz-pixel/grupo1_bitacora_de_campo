@@ -57,6 +57,12 @@ public class FormActivity extends AppCompatActivity {
         }
 
         btnFoto.setOnClickListener(v -> {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
+                    != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                androidx.core.app.ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.CAMERA}, 200);
+                return;
+            }
             Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (i.resolveActivity(getPackageManager()) != null) startActivityForResult(i, REQ_CAMERA);
             else Toast.makeText(this, "No hay cámara disponible", Toast.LENGTH_SHORT).show();
@@ -106,17 +112,35 @@ public class FormActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 200 && grantResults.length > 0 && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (i.resolveActivity(getPackageManager()) != null) startActivityForResult(i, REQ_CAMERA);
+        } else {
+            Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK || data == null) return;
 
         if (requestCode == REQ_CAMERA) {
-            Bundle extras = data.getExtras();
-            Bitmap bmp = (Bitmap) extras.get("data");
-            Bitmap resized = resizeBitmap(bmp, 1024);
-            imgFoto.setImageBitmap(resized);
-            imgFoto.setVisibility(View.VISIBLE);
-            fotoBase64 = bitmapToBase64(resized);
+            try {
+                Bundle extras = data.getExtras();
+                if (extras == null) { Toast.makeText(this, "No se recibió imagen", Toast.LENGTH_SHORT).show(); return; }
+                Bitmap bmp = (Bitmap) extras.get("data");
+                if (bmp == null) { Toast.makeText(this, "La cámara no devolvió imagen", Toast.LENGTH_SHORT).show(); return; }
+                Bitmap resized = resizeBitmap(bmp, 1024);
+                imgFoto.setImageBitmap(resized);
+                imgFoto.setVisibility(View.VISIBLE);
+                fotoBase64 = bitmapToBase64(resized);
+            } catch (Exception e) {
+                Log.e("FormActivity", "Error al procesar foto", e);
+                Toast.makeText(this, "Error al procesar la foto", Toast.LENGTH_SHORT).show();
+            }
         } else if (requestCode == REQ_VOICE) {
             ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             if (results != null && !results.isEmpty()) {
