@@ -37,12 +37,10 @@ Casos incluidos:
 
 ## Distribución del trabajo
 
-| Integrante | Responsabilidad |
-|------------|-----------------|
-| Integrante 1 | Estructura de la solución, proyectos y referencias. |
-| Integrante 2 | Entidad de dominio y DTOs con validaciones. |
-| Integrante 3 | Repositorio EF Core, DbContext y migraciones. |
-| Integrante 4 | Controladores, middleware de errores y configuración Swagger. |
-| Integrante 5 | Colección de Postman, README y documentación. |
-
-> Ajustar los nombres reales de los integrantes antes de la entrega.
+| Integrante | Número de cuenta | Responsabilidad |
+|------------|------------------|-----------------|
+| Angel Manuel Rivera | 202330010471 | Estructura de la solución, proyectos y referencias. |
+| Anthony Joel Gonzales Juárez | 202310010114 | Entidad de dominio y DTOs con validaciones. |
+| Brayan wilfredo Torres aguilar | 201820030041 | Repositorio EF Core, DbContext y migraciones. |
+| Johan Moises Lopez Moran | 202220010502 | Controladores, middleware de errores y configuración Swagger. |
+| Luis David Diaz Medina | 202210010189 | Colección de Postman, README y documentación. |
