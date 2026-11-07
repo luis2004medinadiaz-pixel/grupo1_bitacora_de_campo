@@ -6,7 +6,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-    // En el emulador, localhost de la máquina se accede con 10.0.2.2
+    // Emulador: 10.0.2.2  |  Teléfono físico: IP de tu PC en la red (ej. 192.168.1.10)
     public static final String BASE_URL = "http://10.0.2.2:5080/";
 
     private static Retrofit retrofit;
