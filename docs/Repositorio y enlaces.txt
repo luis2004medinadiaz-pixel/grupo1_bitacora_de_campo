@@ -1,0 +1,5 @@
+interfaz Swagger UI:
+http://localhost:5080/swagger
+
+Repositorio:
+https://github.com/luis2004medinadiaz-pixel/grupo1_bitacora_de_campo
