@@ -18,9 +18,15 @@ public class ValidBase64Attribute : ValidationAttribute
             return ValidationResult.Success;
         }
 
+        var normalized = Base64Photo.Normalize(str);
+        if (normalized is null)
+        {
+            return ValidationResult.Success;
+        }
+
         try
         {
-            var bytes = Convert.FromBase64String(str);
+            var bytes = Convert.FromBase64String(normalized);
             if (bytes.Length > MaxBytes)
             {
                 return new ValidationResult(ErrorMessage ?? "La foto no puede superar 2 MB.");

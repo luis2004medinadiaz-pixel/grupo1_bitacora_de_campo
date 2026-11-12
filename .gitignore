@@ -24,3 +24,11 @@ Thumbs.db
 
 ## Logs
 *.log
+
+## Secretos (nunca al repositorio)
+secrets.json
+appsettings.*.local.json
+*.jks
+*.keystore
+local.properties
+.env

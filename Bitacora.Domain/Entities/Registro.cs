@@ -11,4 +11,10 @@ public class Registro
     public string? FotoBase64 { get; set; }
 
     public DateTime FechaCreacion { get; set; }
+
+    /// <summary>
+    /// Usuario que creó el registro. Es nulo en los registros creados antes de agregar la
+    /// autenticación; esos registros solo los puede modificar un Admin.
+    /// </summary>
+    public int? UsuarioId { get; set; }
 }

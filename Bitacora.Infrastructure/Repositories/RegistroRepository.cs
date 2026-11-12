@@ -19,6 +19,14 @@ public class RegistroRepository : IRegistroRepository
         return await _context.Registros
             .AsNoTracking()
             .OrderByDescending(r => r.FechaCreacion)
+            .Select(r => new Registro
+            {
+                Id = r.Id,
+                Titulo = r.Titulo,
+                Descripcion = r.Descripcion,
+                FechaCreacion = r.FechaCreacion,
+                UsuarioId = r.UsuarioId
+            })
             .ToListAsync(cancellationToken);
     }
 

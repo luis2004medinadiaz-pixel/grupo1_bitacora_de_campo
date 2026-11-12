@@ -1,50 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_light">
 
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="88dp" />
 
+    <!-- Progress Indicator -->
     <ProgressBar
         android:id="@+id/progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:indeterminateTint="@color/green_primary"
         android:visibility="gone" />
 
+    <!-- Empty State TextView -->
     <TextView
         android:id="@+id/txtEmpty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Lista vacía"
+        android:gravity="center"
+        android:padding="24dp"
+        android:text="No hay registros disponibles.\nToca + para crear uno nuevo."
+        android:textColor="@color/text_secondary"
+        android:textSize="15sp"
+        android:drawablePadding="12dp"
+        app:drawableTopCompat="@android:drawable/ic_menu_agenda"
+        app:drawableTint="@color/text_secondary"
         android:visibility="gone" />
 
+    <!-- Error State TextView -->
     <TextView
         android:id="@+id/txtError"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Error"
+        android:gravity="center"
+        android:padding="24dp"
+        android:text="Error al cargar"
+        android:textColor="@color/error_red"
+        android:textSize="15sp"
+        android:drawablePadding="12dp"
+        app:drawableTopCompat="@android:drawable/ic_dialog_alert"
+        app:drawableTint="@color/error_red"
         android:visibility="gone" />
 
-    <Button
+    <!-- Retry Button -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnRetry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="90dp"
         android:text="Reintentar"
+        android:textSize="14sp"
+        app:backgroundTint="@color/green_primary"
+        app:cornerRadius="8dp"
         android:visibility="gone" />
 
+    <!-- Floating Action Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:src="@android:drawable/ic_input_add" />
+        android:layout_margin="20dp"
+        android:src="@android:drawable/ic_input_add"
+        app:backgroundTint="@color/green_primary"
+        app:tint="@color/surface_white"
+        app:elevation="6dp"
+        android:contentDescription="Agregar registro" />
 </FrameLayout>

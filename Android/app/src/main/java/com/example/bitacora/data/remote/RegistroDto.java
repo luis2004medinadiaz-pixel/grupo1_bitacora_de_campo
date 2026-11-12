@@ -17,4 +17,7 @@ public class RegistroDto {
 
     @SerializedName("fechaCreacion")
     public String fechaCreacion;
+
+    @SerializedName("usuarioId")
+    public Integer usuarioId;
 }

@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_light"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -9,46 +13,142 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <EditText
-            android:id="@+id/edtTitulo"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Título (3-100 caracteres)" />
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:strokeColor="@color/card_stroke"
+            app:strokeWidth="1dp"
+            app:cardBackgroundColor="@color/surface_white">
 
-        <EditText
-            android:id="@+id/edtDesc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Descripción (máx 500)"
-            android:minLines="3" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
 
-        <ImageView
-            android:id="@+id/imgFoto"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop"
-            android:visibility="gone"
-            android:layout_marginTop="8dp" />
+                <!-- Title Label -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Título del registro *"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
 
-        <Button
-            android:id="@+id/btnFoto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Tomar foto"
-            android:layout_marginTop="8dp" />
+                <!-- Title Input -->
+                <EditText
+                    android:id="@+id/edtTitulo"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_input_field"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:hint="Ej: Inspección de terreno sector norte"
+                    android:textColorHint="#9CA3AF"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp"
+                    android:inputType="textCapSentences" />
 
-        <Button
-            android:id="@+id/btnVoz"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Descripción por voz"
-            android:layout_marginTop="8dp" />
+                <!-- Description Label -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Descripción detallada *"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
 
-        <Button
-            android:id="@+id/btnSave"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Guardar"
-            android:layout_marginTop="8dp" />
+                <!-- Description Input -->
+                <EditText
+                    android:id="@+id/edtDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="110dp"
+                    android:background="@drawable/bg_input_field"
+                    android:padding="14dp"
+                    android:hint="Escribe los detalles u observaciones de la bitácora..."
+                    android:textColorHint="#9CA3AF"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:gravity="top" />
+
+                <!-- Photo Preview Card Container -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/card_stroke"
+                    app:strokeWidth="1dp">
+
+                    <ImageView
+                        android:id="@+id/imgFoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone"
+                        android:contentDescription="Vista previa de foto" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Auxiliary Action Buttons (Camera & Voice) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnFoto"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="6dp"
+                        android:text="Foto"
+                        android:textColor="@color/green_primary"
+                        app:strokeColor="@color/green_primary"
+                        app:cornerRadius="10dp"
+                        app:icon="@android:drawable/ic_menu_camera"
+                        app:iconTint="@color/green_primary" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnVoz"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        android:text="Voz a texto"
+                        android:textColor="@color/green_primary"
+                        app:strokeColor="@color/green_primary"
+                        app:cornerRadius="10dp"
+                        app:icon="@android:drawable/ic_btn_speak_now"
+                        app:iconTint="@color/green_primary" />
+                </LinearLayout>
+
+                <!-- Primary Save Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSave"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="20dp"
+                    android:text="Guardar registro"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="10dp"
+                    app:backgroundTint="@color/green_primary"
+                    app:icon="@android:drawable/ic_menu_save"
+                    app:iconGravity="textStart" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
     </LinearLayout>
 </ScrollView>

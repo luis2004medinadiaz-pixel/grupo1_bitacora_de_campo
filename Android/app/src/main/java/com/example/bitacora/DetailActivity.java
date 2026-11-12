@@ -12,16 +12,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.bitacora.data.local.SessionManager;
 import com.example.bitacora.data.remote.RegistroDto;
 import com.example.bitacora.data.repository.RegistroRepository;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends BaseAuthActivity {
     private int id;
     private RegistroDto current;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!ensureSession()) return;
         setContentView(R.layout.activity_detail);
 
         id = getIntent().getIntExtra("id", -1);
@@ -32,9 +34,19 @@ public class DetailActivity extends AppCompatActivity {
         Button btnEdit = findViewById(R.id.btnEdit);
         Button btnDelete = findViewById(R.id.btnDelete);
 
+        // Los botones se muestran solo si el usuario puede usarlos. La API valida igualmente
+        // (DELETE solo Admin; PUT solo el dueño o un Admin), esto es solo comodidad de la interfaz.
+        btnEdit.setVisibility(View.GONE);
+        btnDelete.setVisibility(View.GONE);
+
         new RegistroRepository().getById(id, (data, err) -> {
             if (err != null) { Toast.makeText(this, err, Toast.LENGTH_LONG).show(); finish(); return; }
             current = data;
+            SessionManager session = SessionManager.getInstance();
+            boolean esAdmin = session.isAdmin();
+            boolean esDueno = data.usuarioId != null && data.usuarioId == session.getUserId();
+            btnDelete.setVisibility(esAdmin ? View.VISIBLE : View.GONE);
+            btnEdit.setVisibility(esAdmin || esDueno ? View.VISIBLE : View.GONE);
             t.setText(data.titulo);
             d.setText(data.descripcion);
             f.setText(data.fechaCreacion);

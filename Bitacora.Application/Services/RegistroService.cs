@@ -1,6 +1,8 @@
 using Bitacora.Application.DTOs;
 using Bitacora.Application.Exceptions;
 using Bitacora.Application.Interfaces;
+using Bitacora.Application.Validation;
+using Bitacora.Domain;
 using Bitacora.Domain.Entities;
 
 namespace Bitacora.Application.Services;
@@ -22,7 +24,8 @@ public class RegistroService : IRegistroService
             Id = r.Id,
             Titulo = r.Titulo,
             Descripcion = r.Descripcion,
-            FechaCreacion = r.FechaCreacion
+            FechaCreacion = r.FechaCreacion,
+            UsuarioId = r.UsuarioId
         });
     }
 
@@ -37,21 +40,22 @@ public class RegistroService : IRegistroService
         return ToResponse(registro);
     }
 
-    public async Task<RegistroResponseDto> CreateAsync(RegistroCreateDto dto, CancellationToken cancellationToken = default)
+    public async Task<RegistroResponseDto> CreateAsync(RegistroCreateDto dto, int usuarioId, CancellationToken cancellationToken = default)
     {
         var registro = new Registro
         {
             Titulo = dto.Titulo.Trim(),
             Descripcion = dto.Descripcion.Trim(),
-            FotoBase64 = string.IsNullOrWhiteSpace(dto.FotoBase64) ? null : dto.FotoBase64,
-            FechaCreacion = DateTime.UtcNow
+            FotoBase64 = Base64Photo.Normalize(dto.FotoBase64),
+            FechaCreacion = DateTime.UtcNow,
+            UsuarioId = usuarioId
         };
 
         var created = await _repository.AddAsync(registro, cancellationToken);
         return ToResponse(created);
     }
 
-    public async Task<RegistroResponseDto> UpdateAsync(int id, RegistroUpdateDto dto, CancellationToken cancellationToken = default)
+    public async Task<RegistroResponseDto> UpdateAsync(int id, RegistroUpdateDto dto, int usuarioId, string rol, CancellationToken cancellationToken = default)
     {
         var registro = await _repository.GetByIdAsync(id, cancellationToken);
         if (registro is null)
@@ -59,9 +63,15 @@ public class RegistroService : IRegistroService
             throw new NotFoundException($"No se encontró el registro con id {id}.");
         }
 
+        // Autorización por propiedad: solo el creador o un Admin pueden modificar.
+        if (rol != Roles.Admin && registro.UsuarioId != usuarioId)
+        {
+            throw new ForbiddenException("No tienes permiso para modificar un registro creado por otro usuario.");
+        }
+
         registro.Titulo = dto.Titulo.Trim();
         registro.Descripcion = dto.Descripcion.Trim();
-        registro.FotoBase64 = string.IsNullOrWhiteSpace(dto.FotoBase64) ? null : dto.FotoBase64;
+        registro.FotoBase64 = Base64Photo.Normalize(dto.FotoBase64);
 
         await _repository.UpdateAsync(registro, cancellationToken);
         return ToResponse(registro);
@@ -84,6 +94,7 @@ public class RegistroService : IRegistroService
         Titulo = registro.Titulo,
         Descripcion = registro.Descripcion,
         FotoBase64 = registro.FotoBase64,
-        FechaCreacion = registro.FechaCreacion
+        FechaCreacion = registro.FechaCreacion,
+        UsuarioId = registro.UsuarioId
     };
 }

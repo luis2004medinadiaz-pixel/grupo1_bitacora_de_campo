@@ -1,5 +1,5 @@
+using Bitacora.Api.Security;
 using Bitacora.Application.Exceptions;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Bitacora.Api.Middleware;
 
@@ -22,27 +22,34 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception processing {Method} {Path}", context.Request.Method, context.Request.Path);
-
             var (status, title) = ex switch
             {
                 NotFoundException => (StatusCodes.Status404NotFound, "Recurso no encontrado"),
+                ForbiddenException => (StatusCodes.Status403Forbidden, "Acceso prohibido"),
+                UnauthorizedException => (StatusCodes.Status401Unauthorized, "No autenticado"),
+                ConflictException => (StatusCodes.Status409Conflict, "Conflicto"),
                 _ => (StatusCodes.Status500InternalServerError, "Error interno del servidor")
             };
 
-            var problem = new ProblemDetails
+            if (status == StatusCodes.Status500InternalServerError)
             {
-                Status = status,
-                Title = title,
-                Detail = status == StatusCodes.Status500InternalServerError
-                    ? "Ocurrió un error inesperado. Intente nuevamente más tarde."
-                    : ex.Message,
-                Instance = context.Request.Path
-            };
+                _logger.LogError(ex, "Unhandled exception processing {Method} {Path}", context.Request.Method, context.Request.Path);
+            }
+            else
+            {
+                _logger.LogWarning("{Method} {Path} -> {Status}: {Message}", context.Request.Method, context.Request.Path, status, ex.Message);
+            }
 
-            context.Response.StatusCode = status;
-            context.Response.ContentType = "application/problem+json";
-            await context.Response.WriteAsJsonAsync(problem);
+            if (status == StatusCodes.Status401Unauthorized)
+            {
+                context.Response.Headers.WWWAuthenticate = "Bearer";
+            }
+
+            var detail = status == StatusCodes.Status500InternalServerError
+                ? "Ocurrió un error inesperado. Intente nuevamente más tarde."
+                : ex.Message;
+
+            await ProblemResponse.WriteAsync(context.Response, context.Request.Path, status, title, detail);
         }
     }
 }

@@ -8,9 +8,10 @@ public interface IRegistroService
 
     Task<RegistroResponseDto> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
-    Task<RegistroResponseDto> CreateAsync(RegistroCreateDto dto, CancellationToken cancellationToken = default);
+    Task<RegistroResponseDto> CreateAsync(RegistroCreateDto dto, int usuarioId, CancellationToken cancellationToken = default);
 
-    Task<RegistroResponseDto> UpdateAsync(int id, RegistroUpdateDto dto, CancellationToken cancellationToken = default);
+    /// <summary>Un Admin puede modificar cualquier registro; un Usuario solo los suyos (si no, 403).</summary>
+    Task<RegistroResponseDto> UpdateAsync(int id, RegistroUpdateDto dto, int usuarioId, string rol, CancellationToken cancellationToken = default);
 
     Task DeleteAsync(int id, CancellationToken cancellationToken = default);
 }

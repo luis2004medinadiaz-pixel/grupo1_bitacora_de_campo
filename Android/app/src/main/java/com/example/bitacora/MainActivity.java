@@ -2,6 +2,8 @@ package com.example.bitacora;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -11,12 +13,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.example.bitacora.data.local.SessionManager;
 import com.example.bitacora.data.remote.RegistroDto;
 import com.example.bitacora.ui.RegistroAdapter;
 import com.example.bitacora.ui.UiState;
 import com.example.bitacora.viewmodel.RegistroViewModel;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseAuthActivity {
     private RegistroViewModel vm;
     private RegistroAdapter adapter;
     private ProgressBar progress;
@@ -26,7 +29,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!ensureSession()) return;
         setContentView(R.layout.activity_main);
+
+        SessionManager session = SessionManager.getInstance();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setSubtitle(session.getCorreo() + " · " + session.getRol());
+        }
 
         progress = findViewById(R.id.progress);
         txtEmpty = findViewById(R.id.txtEmpty);
@@ -57,7 +66,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        vm.load();
+        if (vm != null && SessionManager.getInstance().isLoggedIn()) vm.load();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_logout) {
+            logout();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void render(UiState<java.util.List<RegistroDto>> s) {

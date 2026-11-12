@@ -1,391 +1,1310 @@
 {
   "info": {
-    "name": "Bitacora API",
-    "description": "Coleccion de pruebas para la API REST de la bitacora de campo.",
+    "name": "Bitacora API (JWT)",
+    "description": "Pruebas de la API de la bitácora de campo con autenticación JWT y roles. Ejecutar en orden: carpeta 0, luego 1, luego 2. Ver README para configurar adminCorreo/adminPassword.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:5080"
+      "value": "https://localhost:7286"
+    },
+    {
+      "key": "usuarioACorreo",
+      "value": "usuario.a@bitacora.test"
+    },
+    {
+      "key": "usuarioAPassword",
+      "value": "UsuarioA2026x"
+    },
+    {
+      "key": "usuarioBCorreo",
+      "value": "usuario.b@bitacora.test"
+    },
+    {
+      "key": "usuarioBPassword",
+      "value": "UsuarioB2026x"
+    },
+    {
+      "key": "adminCorreo",
+      "value": ""
+    },
+    {
+      "key": "adminPassword",
+      "value": ""
+    },
+    {
+      "key": "tokenUsuario",
+      "value": ""
+    },
+    {
+      "key": "tokenUsuarioB",
+      "value": ""
+    },
+    {
+      "key": "tokenAdmin",
+      "value": ""
+    },
+    {
+      "key": "tokenVencido",
+      "value": ""
+    },
+    {
+      "key": "tokenAlterado",
+      "value": ""
+    },
+    {
+      "key": "registroId",
+      "value": ""
+    },
+    {
+      "key": "registroPruebaId",
+      "value": ""
     }
   ],
   "item": [
     {
-      "name": "1. Crear registro (exitoso)",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"titulo\": \"Registro de prueba\",\n  \"descripcion\": \"Descripcion obtenida por voz a texto\",\n  \"fotoBase64\": null\n}"
+      "name": "0. Preparación (registro y login)",
+      "item": [
+        {
+          "name": "0.1 Registrar Usuario A",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/registro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "registro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{usuarioACorreo}}\",\n  \"password\": \"{{usuarioAPassword}}\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 creado o 409 si ya existía', function () { pm.expect(pm.response.code).to.be.oneOf([201,409]); });",
+                  "if (pm.response.code === 201) { pm.test('Rol Usuario y sin hash en la respuesta', function () { var j = pm.response.json(); pm.expect(j.rol).to.eql('Usuario'); pm.expect(j).to.not.have.property('passwordHash'); pm.expect(j).to.not.have.property('password'); }); }"
+                ]
+              }
+            }
+          ]
         },
-        "url": {
-          "raw": "{{baseUrl}}/api/registros",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "registros"
-          ]
-        }
-      },
-      "event": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status code is 201', function () {",
-              "    pm.response.to.have.status(201);",
-              "});",
-              "var json = pm.response.json();",
-              "pm.collectionVariables.set('registroId', json.id);",
-              "pm.test('Location header present', function () {",
-              "    pm.expect(pm.response.headers.get('Location')).to.not.be.null;",
-              "});"
+          "name": "0.2 Registrar Usuario B",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "type": "text/javascript"
-          }
-        }
-      ]
-    },
-    {
-      "name": "2. Listar registros (exitoso)",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/registros",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "registros"
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/registro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "registro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{usuarioBCorreo}}\",\n  \"password\": \"{{usuarioBPassword}}\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 creado o 409 si ya existía', function () { pm.expect(pm.response.code).to.be.oneOf([201,409]); });"
+                ]
+              }
+            }
           ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status code is 200', function () {",
-              "    pm.response.to.have.status(200);",
-              "});",
-              "pm.test('Response is an array', function () {",
-              "    pm.expect(pm.response.json()).to.be.an('array');",
-              "});",
-              "pm.test('Items do not include fotoBase64', function () {",
-              "    var items = pm.response.json();",
-              "    if (items.length > 0) {",
-              "        pm.expect(items[0]).to.not.have.property('fotoBase64');",
-              "    }",
-              "});"
-            ],
-            "type": "text/javascript"
-          }
-        }
-      ]
-    },
-    {
-      "name": "3. Consultar registro por id (exitoso)",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/registros/{{registroId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "registros",
-            "{{registroId}}"
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status code is 200', function () {",
-              "    pm.response.to.have.status(200);",
-              "});",
-              "pm.test('Response includes fotoBase64 field', function () {",
-              "    pm.expect(pm.response.json()).to.have.property('fotoBase64');",
-              "});"
-            ],
-            "type": "text/javascript"
-          }
-        }
-      ]
-    },
-    {
-      "name": "4. Consultar registro por id (fallido - 404)",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/registros/999999",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "registros",
-            "999999"
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status code is 404', function () {",
-              "    pm.response.to.have.status(404);",
-              "});"
-            ],
-            "type": "text/javascript"
-          }
-        }
-      ]
-    },
-    {
-      "name": "5. Crear registro (fallido - 400)",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"titulo\": \"ab\",\n  \"descripcion\": \"\",\n  \"fotoBase64\": \"no-es-base64!!!\"\n}"
         },
-        "url": {
-          "raw": "{{baseUrl}}/api/registros",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "registros"
-          ]
-        }
-      },
-      "event": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status code is 400', function () {",
-              "    pm.response.to.have.status(400);",
-              "});",
-              "pm.test('Problem details present', function () {",
-              "    var json = pm.response.json();",
-              "    pm.expect(json).to.have.property('errors');",
-              "});"
+          "name": "0.3 Registrar con datos inválidos (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "type": "text/javascript"
-          }
-        }
-      ]
-    },
-    {
-      "name": "6. Actualizar registro (exitoso)",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"titulo\": \"Registro actualizado\",\n  \"descripcion\": \"Descripcion actualizada\",\n  \"fotoBase64\": null\n}"
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/registro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "registro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"no-es-correo\",\n  \"password\": \"123\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
         },
-        "url": {
-          "raw": "{{baseUrl}}/api/registros/{{registroId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "registros",
-            "{{registroId}}"
-          ]
-        }
-      },
-      "event": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status code is 200', function () {",
-              "    pm.response.to.have.status(200);",
-              "});",
-              "pm.test('Titulo actualizado', function () {",
-              "    pm.expect(pm.response.json().titulo).to.eql('Registro actualizado');",
-              "});"
+          "name": "0.4 Registrar correo repetido (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "type": "text/javascript"
-          }
-        }
-      ]
-    },
-    {
-      "name": "7. Actualizar registro (fallido - 400)",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"titulo\": \"ab\",\n  \"descripcion\": \"desc\",\n  \"fotoBase64\": null\n}"
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/registro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "registro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{usuarioACorreo}}\",\n  \"password\": \"{{usuarioAPassword}}\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código 409', function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ]
         },
-        "url": {
-          "raw": "{{baseUrl}}/api/registros/{{registroId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "registros",
-            "{{registroId}}"
-          ]
-        }
-      },
-      "event": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status code is 400', function () {",
-              "    pm.response.to.have.status(400);",
-              "});"
+          "name": "0.5 Login Usuario A",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "type": "text/javascript"
-          }
-        }
-      ]
-    },
-    {
-      "name": "8. Actualizar registro (fallido - 404)",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"titulo\": \"No existe\",\n  \"descripcion\": \"desc\",\n  \"fotoBase64\": null\n}"
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{usuarioACorreo}}\",\n  \"password\": \"{{usuarioAPassword}}\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login correcto (200)', function () { pm.response.to.have.status(200); });",
+                  "var j = pm.response.json();",
+                  "pm.test('Devuelve token, expiraEn y rol', function () {",
+                  "  pm.expect(j.token).to.be.a('string').and.not.empty;",
+                  "  pm.expect(j.expiraEn).to.be.a('string');",
+                  "  pm.expect(j.rol).to.be.oneOf(['Admin','Usuario']);",
+                  "});",
+                  "pm.collectionVariables.set('tokenUsuario', j.token);",
+                  "// Se guarda una copia del primer token para la prueba de 'token vencido' (ver README).",
+                  "if (!pm.collectionVariables.get('tokenVencido')) { pm.collectionVariables.set('tokenVencido', j.token); }",
+                  "pm.collectionVariables.set('usuarioAId', j.usuarioId);"
+                ]
+              }
+            }
+          ]
         },
-        "url": {
-          "raw": "{{baseUrl}}/api/registros/999999",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "registros",
-            "999999"
-          ]
-        }
-      },
-      "event": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status code is 404', function () {",
-              "    pm.response.to.have.status(404);",
-              "});"
+          "name": "0.6 Login Usuario B",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "type": "text/javascript"
-          }
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{usuarioBCorreo}}\",\n  \"password\": \"{{usuarioBPassword}}\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login correcto (200)', function () { pm.response.to.have.status(200); });",
+                  "var j = pm.response.json();",
+                  "pm.test('Devuelve token, expiraEn y rol', function () {",
+                  "  pm.expect(j.token).to.be.a('string').and.not.empty;",
+                  "  pm.expect(j.expiraEn).to.be.a('string');",
+                  "  pm.expect(j.rol).to.be.oneOf(['Admin','Usuario']);",
+                  "});",
+                  "pm.collectionVariables.set('tokenUsuarioB', j.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "0.7 Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{adminCorreo}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login correcto (200)', function () { pm.response.to.have.status(200); });",
+                  "var j = pm.response.json();",
+                  "pm.test('Devuelve token, expiraEn y rol', function () {",
+                  "  pm.expect(j.token).to.be.a('string').and.not.empty;",
+                  "  pm.expect(j.expiraEn).to.be.a('string');",
+                  "  pm.expect(j.rol).to.be.oneOf(['Admin','Usuario']);",
+                  "});",
+                  "pm.collectionVariables.set('tokenAdmin', j.token);",
+                  "pm.test('El rol es Admin', function () { pm.expect(j.rol).to.eql('Admin'); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "9. Eliminar registro (exitoso)",
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/registros/{{registroId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "registros",
-            "{{registroId}}"
-          ]
-        }
-      },
-      "event": [
+      "name": "1. Pruebas obligatorias de seguridad",
+      "item": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status code is 204', function () {",
-              "    pm.response.to.have.status(204);",
-              "});"
+          "name": "1.0 (preparación) Usuario A crea un registro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "type": "text/javascript"
-          }
+            "url": {
+              "raw": "{{baseUrl}}/api/registros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Registro de Usuario A\",\n  \"descripcion\": \"Registro para las pruebas de autorización\",\n  \"fotoBase64\": null\n}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenUsuario}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código 201', function () { pm.response.to.have.status(201); });",
+                  "var j = pm.response.json(); pm.collectionVariables.set('registroPruebaId', j.id);",
+                  "pm.test('Guarda al usuario creador', function () { pm.expect(j.usuarioId).to.eql(Number(pm.collectionVariables.get('usuarioAId'))); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.1 Petición SIN token → 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/registros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('Incluye WWW-Authenticate: Bearer', function () { pm.expect(pm.response.headers.get('WWW-Authenticate')).to.include('Bearer'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.2 Token de Usuario intenta DELETE → 403",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/registros/{{registroPruebaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros",
+                "{{registroPruebaId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenUsuario}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.3 Usuario B modifica registro AJENO (de A) → 403",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/registros/{{registroPruebaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros",
+                "{{registroPruebaId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Intento de B\",\n  \"descripcion\": \"No debería poder modificarlo\",\n  \"fotoBase64\": null\n}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenUsuarioB}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.3b Usuario A modifica su PROPIO registro → 200",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/registros/{{registroPruebaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros",
+                "{{registroPruebaId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Registro de A (editado)\",\n  \"descripcion\": \"El dueño sí puede modificarlo\",\n  \"fotoBase64\": null\n}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenUsuario}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.4 Token ALTERADO → 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/registros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAlterado}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Cambia un carácter de la firma: el token deja de ser válido.",
+                  "var t = pm.collectionVariables.get('tokenUsuario') || '';",
+                  "var p = t.split('.');",
+                  "if (p.length === 3) { var s = p[2]; var i = 5; p[2] = s.substring(0,i) + (s.charAt(i) === 'A' ? 'B' : 'A') + s.substring(i+1); }",
+                  "pm.collectionVariables.set('tokenAlterado', p.join('.'));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.5 Token VENCIDO → 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/registros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenVencido}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('El mensaje indica que venció', function () { pm.expect(pm.response.headers.get('WWW-Authenticate')).to.include('expired'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.6a Login con contraseña incorrecta → 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{usuarioACorreo}}\",\n  \"password\": \"ContraseñaIncorrecta1\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código 401', function () { pm.response.to.have.status(401); });",
+                  "pm.collectionVariables.set('detalleLogin1', pm.response.json().detail);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.6b Login con correo inexistente → 401 (mismo mensaje)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"no.existe@bitacora.test\",\n  \"password\": \"ContraseñaIncorrecta1\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('No revela si falló el correo o la contraseña', function () { pm.expect(pm.response.json().detail).to.eql(pm.collectionVariables.get('detalleLogin1')); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.7 Admin hace DELETE → 204",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/registros/{{registroPruebaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros",
+                "{{registroPruebaId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código 204', function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "10. Eliminar registro (fallido - 404)",
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/registros/999999",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "registros",
-            "999999"
-          ]
-        }
-      },
-      "event": [
+      "name": "2. CRUD de registros (con token)",
+      "item": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Status code is 404', function () {",
-              "    pm.response.to.have.status(404);",
-              "});"
+          "name": "1. Crear registro (exitoso)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "type": "text/javascript"
-          }
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Registro de prueba\",\n  \"descripcion\": \"Descripcion obtenida por voz a texto\",\n  \"fotoBase64\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/registros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenUsuario}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "pm.collectionVariables.set('registroId', json.id);",
+                  "pm.test('Location header present', function () {",
+                  "    pm.expect(pm.response.headers.get('Location')).to.not.be.null;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. Listar registros (exitoso)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/registros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenUsuario}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response is an array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});",
+                  "pm.test('Items do not include fotoBase64', function () {",
+                  "    var items = pm.response.json();",
+                  "    if (items.length > 0) {",
+                  "        pm.expect(items[0]).to.not.have.property('fotoBase64');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "3. Consultar registro por id (exitoso)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/registros/{{registroId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros",
+                "{{registroId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenUsuario}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response includes fotoBase64 field', function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('fotoBase64');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "4. Consultar registro por id (fallido - 404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/registros/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros",
+                "999999"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenUsuario}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "5. Crear registro (fallido - 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"ab\",\n  \"descripcion\": \"\",\n  \"fotoBase64\": \"no-es-base64!!!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/registros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenUsuario}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Problem details present', function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('errors');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "6. Actualizar registro (exitoso)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Registro actualizado\",\n  \"descripcion\": \"Descripcion actualizada\",\n  \"fotoBase64\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/registros/{{registroId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros",
+                "{{registroId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenUsuario}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Titulo actualizado', function () {",
+                  "    pm.expect(pm.response.json().titulo).to.eql('Registro actualizado');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "7. Actualizar registro (fallido - 400)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"ab\",\n  \"descripcion\": \"desc\",\n  \"fotoBase64\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/registros/{{registroId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros",
+                "{{registroId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenUsuario}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "8. Actualizar registro (fallido - 404)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"No existe\",\n  \"descripcion\": \"desc\",\n  \"fotoBase64\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/registros/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros",
+                "999999"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenUsuario}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "9. Eliminar registro (exitoso)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/registros/{{registroId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros",
+                "{{registroId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 204', function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "10. Eliminar registro (fallido - 404)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/registros/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "registros",
+                "999999"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAdmin}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
       ]
     }
-  ]
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{tokenUsuario}}",
+        "type": "string"
+      }
+    ]
+  }
 }

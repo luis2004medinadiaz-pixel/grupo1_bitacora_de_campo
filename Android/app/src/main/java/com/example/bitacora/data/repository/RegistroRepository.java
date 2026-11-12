@@ -25,7 +25,7 @@ public class RegistroRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     cb.onResult(response.body(), null);
                 } else {
-                    cb.onResult(null, "Error del servidor: " + response.code());
+                    cb.onResult(null, com.example.bitacora.data.remote.ApiErrors.message(response.code()));
                 }
             }
             @Override
@@ -42,7 +42,7 @@ public class RegistroRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     cb.onResult(response.body(), null);
                 } else {
-                    cb.onResult(null, "Error del servidor: " + response.code());
+                    cb.onResult(null, com.example.bitacora.data.remote.ApiErrors.message(response.code()));
                 }
             }
             @Override
@@ -59,7 +59,7 @@ public class RegistroRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     cb.onResult(response.body(), null);
                 } else {
-                    cb.onResult(null, "Error del servidor: " + response.code());
+                    cb.onResult(null, com.example.bitacora.data.remote.ApiErrors.message(response.code()));
                 }
             }
             @Override
@@ -76,7 +76,7 @@ public class RegistroRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     cb.onResult(response.body(), null);
                 } else {
-                    cb.onResult(null, "Error del servidor: " + response.code());
+                    cb.onResult(null, com.example.bitacora.data.remote.ApiErrors.message(response.code()));
                 }
             }
             @Override
@@ -93,7 +93,7 @@ public class RegistroRepository {
                 if (response.isSuccessful()) {
                     cb.onResult(null);
                 } else {
-                    cb.onResult("Error del servidor: " + response.code());
+                    cb.onResult(com.example.bitacora.data.remote.ApiErrors.message(response.code()));
                 }
             }
             @Override

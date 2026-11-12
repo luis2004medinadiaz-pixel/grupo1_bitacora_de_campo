@@ -11,6 +11,8 @@ public class RegistroResponseDto
     public string? FotoBase64 { get; set; }
 
     public DateTime FechaCreacion { get; set; }
+
+    public int? UsuarioId { get; set; }
 }
 
 public class RegistroListItemDto
@@ -22,4 +24,6 @@ public class RegistroListItemDto
     public string Descripcion { get; set; } = string.Empty;
 
     public DateTime FechaCreacion { get; set; }
+
+    public int? UsuarioId { get; set; }
 }
