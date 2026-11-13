@@ -12,12 +12,6 @@ import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
-
-/**
- * Guarda la sesión (token JWT, rol, correo) cifrada con EncryptedSharedPreferences.
- * La clave de cifrado vive en el Android Keystore, así que el token no queda en texto plano
- * en el almacenamiento del dispositivo (a diferencia de SharedPreferences comunes).
- */
 public class SessionManager {
     private static final String FILE = "bitacora_session";
     private static final String K_TOKEN = "token";
@@ -49,7 +43,6 @@ public class SessionManager {
         try {
             p = open(context);
         } catch (GeneralSecurityException | IOException e) {
-            // Archivo cifrado corrupto (por ejemplo, cambió el Keystore): se reinicia la sesión.
             context.deleteSharedPreferences(FILE);
             try {
                 p = open(context);
@@ -88,7 +81,6 @@ public class SessionManager {
     public int getUserId() { return prefs.getInt(K_USER_ID, -1); }
     public boolean isAdmin() { return "Admin".equals(getRol()); }
 
-    /** Hay token guardado y todavía no ha vencido. */
     public boolean isLoggedIn() {
         String token = getToken();
         return token != null && System.currentTimeMillis() < prefs.getLong(K_EXPIRA, 0L);
@@ -98,19 +90,17 @@ public class SessionManager {
         prefs.edit().clear().apply();
     }
 
-    // ---- aviso de sesión vencida (lo dispara el interceptor al recibir 401) ----
     public LiveData<String> getExpiredEvent() { return expiredEvent; }
     public void notifyExpired(String message) { expiredEvent.postValue(message); }
     public void consumeExpiredEvent() { expiredEvent.setValue(null); }
 
-    /** El servidor envía algo como 2026-11-11T18:10:00.123Z (UTC). minSdk 24: sin java.time. */
     private static long parseUtcMillis(String iso) {
         try {
             SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
             f.setTimeZone(TimeZone.getTimeZone("UTC"));
             return f.parse(iso.substring(0, 19)).getTime();
         } catch (Exception e) {
-            return 0L; // formato inesperado: se considera vencido
+            return 0L;
         }
     }
 }

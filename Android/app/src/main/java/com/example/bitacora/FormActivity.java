@@ -27,18 +27,25 @@ import java.util.ArrayList;
 public class FormActivity extends BaseAuthActivity {
     private static final int REQ_CAMERA = 100;
     private static final int REQ_VOICE = 101;
+    private static final String KEY_PHOTO_PATH = "pending_photo_path";
 
     private EditText edtTitulo, edtDesc;
     private ImageView imgFoto;
     private String fotoBase64 = null;
     private int editId = -1;
     private Uri pendingPhotoUri = null;
+    private File pendingPhotoFile = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (!ensureSession()) return;
         setContentView(R.layout.activity_form);
+
+        if (savedInstanceState != null) {
+            String p = savedInstanceState.getString(KEY_PHOTO_PATH);
+            if (p != null) pendingPhotoFile = new File(p);
+        }
 
         edtTitulo = findViewById(R.id.edtTitulo);
         edtDesc = findViewById(R.id.edtDesc);
@@ -128,6 +135,7 @@ public class FormActivity extends BaseAuthActivity {
     private void launchCamera() {
         try {
             File photoFile = File.createTempFile("bitacora_", ".jpg", getCacheDir());
+            pendingPhotoFile = photoFile;
             pendingPhotoUri = FileProvider.getUriForFile(
                     this, getPackageName() + ".fileprovider", photoFile);
             Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -147,18 +155,36 @@ public class FormActivity extends BaseAuthActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (pendingPhotoFile != null) {
+            outState.putString(KEY_PHOTO_PATH, pendingPhotoFile.getAbsolutePath());
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) return;
 
         if (requestCode == REQ_CAMERA) {
             try {
-                Bitmap bmp;
-                if (pendingPhotoUri != null) {
-                    bmp = decodeSampledBitmap(pendingPhotoUri, 1024);
-                } else {
-                    Bundle extras = data.getExtras();
-                    bmp = extras == null ? null : (Bitmap) extras.get("data");
+                Bitmap bmp = null;
+                if (pendingPhotoFile != null && pendingPhotoFile.exists() && pendingPhotoFile.length() > 0) {
+                    try { bmp = decodeSampledBitmap(pendingPhotoFile, 1024); } catch (Exception ignored) { }
+                }
+                if (bmp == null && pendingPhotoUri != null) {
+                    try { bmp = decodeSampledBitmap(pendingPhotoUri, 1024); } catch (Exception ignored) { }
+                }
+                if (bmp == null) {
+                    Uri dataUri = (data == null) ? null : data.getData();
+                    if (dataUri != null) {
+                        try { bmp = decodeSampledBitmap(dataUri, 1024); } catch (Exception ignored) { }
+                    }
+                    if (bmp == null) {
+                        Bundle extras = (data == null) ? null : data.getExtras();
+                        if (extras != null) bmp = (Bitmap) extras.get("data");
+                    }
                 }
                 if (bmp == null) { Toast.makeText(this, "La cámara no devolvió imagen", Toast.LENGTH_SHORT).show(); return; }
                 Bitmap resized = resizeBitmap(bmp, 1024);
@@ -167,9 +193,10 @@ public class FormActivity extends BaseAuthActivity {
                 fotoBase64 = bitmapToBase64(resized);
             } catch (Exception e) {
                 Log.e("FormActivity", "Error al procesar foto", e);
-                Toast.makeText(this, "Error al procesar la foto", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Error al procesar la foto: " + e.getClass().getSimpleName() + " - " + e.getMessage(), Toast.LENGTH_LONG).show();
             } finally {
                 pendingPhotoUri = null;
+                pendingPhotoFile = null;
             }
         } else if (requestCode == REQ_VOICE && data != null) {
             ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
@@ -196,6 +223,20 @@ public class FormActivity extends BaseAuthActivity {
         try (InputStream is = getContentResolver().openInputStream(uri)) {
             return BitmapFactory.decodeStream(is, null, opts);
         }
+    }
+
+    private Bitmap decodeSampledBitmap(File file, int maxSize) throws Exception {
+        BitmapFactory.Options bounds = new BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file.getAbsolutePath(), bounds);
+
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        int sample = 1;
+        while (bounds.outWidth / sample > maxSize * 2 || bounds.outHeight / sample > maxSize * 2) {
+            sample *= 2;
+        }
+        opts.inSampleSize = sample;
+        return BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
     }
 
     private Bitmap resizeBitmap(Bitmap bmp, int maxSize) {

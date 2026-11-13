@@ -34,8 +34,6 @@ public class DetailActivity extends BaseAuthActivity {
         Button btnEdit = findViewById(R.id.btnEdit);
         Button btnDelete = findViewById(R.id.btnDelete);
 
-        // Los botones se muestran solo si el usuario puede usarlos. La API valida igualmente
-        // (DELETE solo Admin; PUT solo el dueño o un Admin), esto es solo comodidad de la interfaz.
         btnEdit.setVisibility(View.GONE);
         btnDelete.setVisibility(View.GONE);
 

@@ -28,7 +28,7 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <!-- Title Label -->
+                
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="6dp" />
 
-                <!-- Title Input -->
+                
                 <EditText
                     android:id="@+id/edtTitulo"
                     android:layout_width="match_parent"
@@ -52,7 +52,7 @@
                     android:textSize="15sp"
                     android:inputType="textCapSentences" />
 
-                <!-- Description Label -->
+                
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="6dp" />
 
-                <!-- Description Input -->
+                
                 <EditText
                     android:id="@+id/edtDesc"
                     android:layout_width="match_parent"
@@ -78,7 +78,7 @@
                     android:inputType="textMultiLine|textCapSentences"
                     android:gravity="top" />
 
-                <!-- Photo Preview Card Container -->
+                
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
                         android:contentDescription="Vista previa de foto" />
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Auxiliary Action Buttons (Camera & Voice) -->
+                
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -133,7 +133,7 @@
                         app:iconTint="@color/green_primary" />
                 </LinearLayout>
 
-                <!-- Primary Save Button -->
+                
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSave"
                     android:layout_width="match_parent"

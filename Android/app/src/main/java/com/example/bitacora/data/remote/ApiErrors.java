@@ -1,6 +1,5 @@
 package com.example.bitacora.data.remote;
 
-/** Mensajes amigables según el código HTTP. */
 public class ApiErrors {
     public static String message(int code) {
         switch (code) {

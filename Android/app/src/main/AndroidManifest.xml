@@ -23,6 +23,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".DetailActivity" />
         <activity android:name=".FormActivity" />
+        <activity android:name=".ComparativaActivity" android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

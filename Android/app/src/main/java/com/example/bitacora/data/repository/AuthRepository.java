@@ -23,7 +23,6 @@ public class AuthRepository {
                     SessionManager.getInstance().saveSession(response.body());
                     cb.onResult(null);
                 } else if (response.code() == 401) {
-                    // Mensaje único, igual que el de la API: no indica qué dato falló.
                     cb.onResult("Correo o contraseña incorrectos.");
                 } else if (response.code() == 400) {
                     cb.onResult("Escribe tu correo y tu contraseña.");

@@ -6,7 +6,7 @@
     android:fitsSystemWindows="true"
     android:background="@color/bg_light">
 
-    <!-- RecyclerView -->
+    
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
         android:paddingTop="8dp"
         android:paddingBottom="88dp" />
 
-    <!-- Progress Indicator -->
+    
     <ProgressBar
         android:id="@+id/progress"
         android:layout_width="wrap_content"
@@ -24,7 +24,7 @@
         android:indeterminateTint="@color/green_primary"
         android:visibility="gone" />
 
-    <!-- Empty State TextView -->
+    
     <TextView
         android:id="@+id/txtEmpty"
         android:layout_width="wrap_content"
@@ -40,7 +40,7 @@
         app:drawableTint="@color/text_secondary"
         android:visibility="gone" />
 
-    <!-- Error State TextView -->
+    
     <TextView
         android:id="@+id/txtError"
         android:layout_width="wrap_content"
@@ -56,7 +56,7 @@
         app:drawableTint="@color/error_red"
         android:visibility="gone" />
 
-    <!-- Retry Button -->
+    
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnRetry"
         android:layout_width="wrap_content"
@@ -69,7 +69,7 @@
         app:cornerRadius="8dp"
         android:visibility="gone" />
 
-    <!-- Floating Action Button -->
+    
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdd"
         android:layout_width="wrap_content"
