@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
     // Emulador: 10.0.2.2  |  Teléfono físico: IP de tu PC en la red (ej. 192.168.1.10)
     // Si cambias esta IP, actualízala también en res/xml/network_security_config.xml
-    public static final String BASE_URL = "http://192.168.18.10:5080/";
+    public static final String BASE_URL = "http://10.0.2.2:5080/";
 
     private static Retrofit retrofit;
 

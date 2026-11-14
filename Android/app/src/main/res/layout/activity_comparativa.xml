@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Escenario a probar"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/grupoEscenario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/radioNormal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Normal (GET /api/registros)" />
+
+            <RadioButton
+                android:id="@+id/radioLento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tiempo de espera (GET /api/pruebas/lento)" />
+
+            <RadioButton
+                android:id="@+id/radioError500"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Error 500 (GET /api/pruebas/error)" />
+        </RadioGroup>
+
+        <CheckBox
+            android:id="@+id/chkToken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Enviar token (desmarcar para probar el 401)" />
+
+        <Button
+            android:id="@+id/btnVolley"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Volley" />
+
+        <Button
+            android:id="@+id/btnOkHttp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="OkHttp" />
+
+        <Button
+            android:id="@+id/btnRetrofit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Retrofit" />
+
+        <Button
+            android:id="@+id/btnLimpiar"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Limpiar resultados" />
+
+        <TextView
+            android:id="@+id/txtResultado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textSize="15sp"
+            android:text="Aún no hay resultados." />
+    </LinearLayout>
+</ScrollView>
