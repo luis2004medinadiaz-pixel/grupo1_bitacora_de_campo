@@ -6,11 +6,6 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/**
- * Agrega "Authorization: Bearer <token>" a cada petición (excepto login y registro) y,
- * si el servidor responde 401 a una petición que sí llevaba token, borra la sesión y avisa a la UI.
- * El 403 NO cierra la sesión: el usuario sigue autenticado pero sin permiso para esa acción.
- */
 public class AuthInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {

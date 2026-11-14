@@ -81,6 +81,10 @@ public class MainActivity extends BaseAuthActivity {
             logout();
             return true;
         }
+        if (item.getItemId() == R.id.action_comparativa) {
+            startActivity(new Intent(this, ComparativaActivity.class));
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 

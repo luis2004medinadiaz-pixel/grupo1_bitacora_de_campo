@@ -29,7 +29,7 @@
                 android:orientation="vertical"
                 android:padding="24dp">
 
-                <!-- Header Icon & Title -->
+                
                 <ImageView
                     android:layout_width="56dp"
                     android:layout_height="56dp"
@@ -57,7 +57,7 @@
                     android:textSize="14sp"
                     android:gravity="center" />
 
-                <!-- Error Message -->
+                
                 <TextView
                     android:id="@+id/txtMensaje"
                     android:layout_width="match_parent"
@@ -70,7 +70,7 @@
                     android:gravity="center"
                     android:visibility="gone" />
 
-                <!-- Email Input -->
+                
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilCorreo"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -100,7 +100,7 @@
                         android:textColorHint="#616161" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Password Input -->
+                
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilPassword"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -131,7 +131,7 @@
                         android:textColorHint="#616161" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Confirm Password Input -->
+                
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilConfirmar"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -162,7 +162,7 @@
                         android:textColorHint="#616161" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Progress Bar -->
+                
                 <ProgressBar
                     android:id="@+id/progress"
                     android:layout_width="wrap_content"
@@ -172,7 +172,7 @@
                     android:indeterminateTint="@color/green_primary"
                     android:visibility="gone" />
 
-                <!-- Register Button -->
+                
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRegistrar"
                     android:layout_width="match_parent"
@@ -184,7 +184,7 @@
                     app:cornerRadius="10dp"
                     app:backgroundTint="@color/green_primary" />
 
-                <!-- Back to Login Button -->
+                
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnVolver"
                     style="@style/Widget.MaterialComponents.Button.TextButton"

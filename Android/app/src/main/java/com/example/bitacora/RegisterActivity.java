@@ -55,7 +55,6 @@ public class RegisterActivity extends AppCompatActivity {
             tilCorreo.setError("Escribe un correo válido");
             ok = false;
         }
-        // Mismas reglas que la API: 8 a 72 caracteres, al menos una letra y un número.
         if (password.length() < 8 || password.length() > 72
                 || !password.matches(".*[A-Za-z].*") || !password.matches(".*\\d.*")) {
             tilPassword.setError("De 8 a 72 caracteres, con al menos una letra y un número");
@@ -76,7 +75,6 @@ public class RegisterActivity extends AppCompatActivity {
                 txtMensaje.setVisibility(View.VISIBLE);
                 return;
             }
-            // Registro correcto: se inicia sesión de inmediato con las mismas credenciales.
             repo.login(correo, password, loginError -> {
                 setLoading(false);
                 if (loginError != null) {

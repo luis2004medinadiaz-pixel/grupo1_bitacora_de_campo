@@ -6,7 +6,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.bitacora.data.local.SessionManager;
 
-/** Base de las pantallas protegidas: exige sesión vigente y reacciona a un 401 en cualquier petición. */
 public abstract class BaseAuthActivity extends AppCompatActivity {
 
     @Override
@@ -20,7 +19,6 @@ public abstract class BaseAuthActivity extends AppCompatActivity {
         });
     }
 
-    /** Devuelve false (y manda al login) si no hay sesión vigente. Llamar al inicio de onCreate. */
     protected boolean ensureSession() {
         SessionManager s = SessionManager.getInstance();
         if (!s.isLoggedIn()) {
