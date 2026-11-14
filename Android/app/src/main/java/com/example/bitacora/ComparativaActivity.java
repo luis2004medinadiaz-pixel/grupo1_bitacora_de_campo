@@ -29,10 +29,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.lang.reflect.Type;
 import java.net.ConnectException;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -56,6 +56,7 @@ import okhttp3.ResponseBody;
  */
 public class ComparativaActivity extends BaseAuthActivity {
     private static final String TAG = "COMPARATIVA";
+    // Menor que los 20 s del endpoint lento: la petición debe agotarse y fallar, nunca llegar a OK.
     private static final int TIMEOUT_MS = 15000;
 
     private static final String[] ESCENARIOS = {
@@ -108,6 +109,7 @@ public class ComparativaActivity extends BaseAuthActivity {
                 .connectTimeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
                 .readTimeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
                 .writeTimeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                .callTimeout(TIMEOUT_MS, TimeUnit.MILLISECONDS) // mismo límite total (15 s) que Volley y Retrofit
                 .build();
 
         findViewById(R.id.btnVolley).setOnClickListener(v -> pruebaVolley());
@@ -161,8 +163,9 @@ public class ComparativaActivity extends BaseAuthActivity {
                 return h;
             }
         };
-        // Tiempo de espera 15 s, 1 reintento, sin aumento del tiempo entre intentos.
-        req.setRetryPolicy(new DefaultRetryPolicy(TIMEOUT_MS, 1, 1.0f));
+        // 15 s por intento + 1 reintento = ~30 s hasta el fallo; el endpoint lento tarda 20 s,
+        // así que debe terminar en TimeoutError (nunca en OK).
+        req.setRetryPolicy(new DefaultRetryPolicy(15000, 1, 0f));
         req.setShouldCache(false);
         volleyQueue.add(req);
     }
@@ -244,8 +247,9 @@ public class ComparativaActivity extends BaseAuthActivity {
     }
 
     private String[] describirOkHttp(IOException e) {
-        if (e instanceof SocketTimeoutException) {
-            return new String[]{"SocketTimeoutException", "El servidor tardó demasiado. Intenta de nuevo."};
+        if (e instanceof InterruptedIOException) {
+            // cubre SocketTimeoutException y el timeout de callTimeout
+            return new String[]{e.getClass().getSimpleName(), "El servidor tardó demasiado. Intenta de nuevo."};
         }
         if (e instanceof UnknownHostException || e instanceof ConnectException || e instanceof SocketException) {
             return new String[]{e.getClass().getSimpleName(), "Sin conexión con el servidor. Revisa tu internet."};
