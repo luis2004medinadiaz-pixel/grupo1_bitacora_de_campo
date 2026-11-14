@@ -77,6 +77,10 @@ public class MainActivity extends BaseAuthActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_comparativa) {
+            startActivity(new android.content.Intent(this, ComparativaActivity.class));
+            return true;
+        }
         if (item.getItemId() == R.id.action_logout) {
             logout();
             return true;

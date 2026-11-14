@@ -35,6 +35,24 @@ public class RegistroRepository {
         });
     }
 
+    /** Igual que getAll pero sobre una ruta relativa (la usa la pantalla de comparativa). */
+    public void getAllFrom(String path, CallbackList cb) {
+        api.getFrom(path).enqueue(new Callback<List<RegistroDto>>() {
+            @Override
+            public void onResponse(Call<List<RegistroDto>> call, Response<List<RegistroDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    cb.onResult(response.body(), null);
+                } else {
+                    cb.onResult(null, com.example.bitacora.data.remote.ApiErrors.message(response.code()));
+                }
+            }
+            @Override
+            public void onFailure(Call<List<RegistroDto>> call, Throwable t) {
+                cb.onResult(null, "Sin conexión o tiempo de espera agotado: " + t.getMessage());
+            }
+        });
+    }
+
     public void getById(int id, CallbackOne cb) {
         api.getById(id).enqueue(new Callback<RegistroDto>() {
             @Override

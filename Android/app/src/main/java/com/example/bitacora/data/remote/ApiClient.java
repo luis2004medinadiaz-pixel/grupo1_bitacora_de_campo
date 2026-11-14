@@ -22,7 +22,7 @@ public class ApiClient {
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
-                    .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                    .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS) // 15 s: la comparativa prueba un endpoint lento de 20 s
                     .writeTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
                     .addInterceptor(new AuthInterceptor())
                     .addInterceptor(logging)

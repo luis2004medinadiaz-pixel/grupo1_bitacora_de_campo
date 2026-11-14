@@ -8,10 +8,15 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Url;
 
 public interface RegistroApi {
     @GET("api/registros")
     Call<List<RegistroDto>> getAll();
+
+    /** Solo para la comparativa: consulta una ruta relativa cualquiera (endpoints de prueba). */
+    @GET
+    Call<List<RegistroDto>> getFrom(@Url String path);
 
     @GET("api/registros/{id}")
     Call<RegistroDto> getById(@Path("id") int id);
