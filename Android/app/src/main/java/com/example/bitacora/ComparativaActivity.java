@@ -54,8 +54,10 @@ public class ComparativaActivity extends AppCompatActivity {
         tvResultado = findViewById(R.id.tvResultado);
 
         try {
-            String t = SessionManager.getInstance().getToken();
-            if (t != null && !t.isEmpty()) token = t;
+            if (token.equals("PEGA_AQUI_TU_JWT")) {
+                String t = SessionManager.getInstance().getToken();
+                if (t != null && !t.isEmpty()) token = t;
+            }
         } catch (Exception ignored) { }
 
         okClient = new OkHttpClient.Builder()
